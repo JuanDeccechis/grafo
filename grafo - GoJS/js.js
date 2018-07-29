@@ -103,49 +103,87 @@ function graficar(){
 	diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
     cantidadPerspectivas = document.querySelector("#perspectivas").value;
-    let widthTotal = 500;
-    let heightTotal = 700;
+    let widthTotal = (document.querySelector("#myDiagramDiv").clientWidth - 20);
+    let heightTotal = (document.querySelector("#myDiagramDiv").clientHeight - 20);
     let myheight = heightTotal/cantidadPerspectivas;
     let mySize = widthTotal +" " + myheight;
-    /*let yOrigen = 0;
-    let posOrigen = 0 + " " + yOrigen;*/
+    let yOrigen = 0;
+    let posOrigen = 0 + " " + yOrigen;
     let colorObjetivo ="";
     let sizeTotal = widthTotal + " " + heightTotal;
 
     let cantidad = 0;
-	diagram.groupTemplate =
-	    $(go.Group, "Vertical",
-		    { background: "transparent",
-		    selectionObjectName: "PH",
-	        locationObjectName: "PH",
-	        resizable: true,
-	        resizeObjectName: "PH",
-	        deletable: false,
-	        /*layout: $(go.LayeredDigraphLayout) */},
-	      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-	      $(go.Panel, "Auto",
-			
-	    	$(go.Shape, 
-	        	{ name: "PH",
-	        	strokeWidth: 2,
-	        	figure: "RoundedRectangle"},
-	        	new go.Binding("fill", "color"),
-	        	new go.Binding("stroke", "highlight"),
-	        	new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-	    	),
-	    	$(go.Placeholder,    /*el placeholder es para los nodos aparezcan centrados, sino aparecen de izq a der*/
-                        { padding: 1 }),
-	    	$(go.TextBlock, 
-        		{ alignment: go.Spot.BottomCenter, font: "Bold 12pt Sans-Serif" },
-        		new go.Binding("text", "key"))
-	    ));
+
+    diagram.nodeTemplate = 
+        $(go.Node, "Spot", /*go.Panel.Auto*/
+            {selectionObjectName: "PH",
+            locationObjectName: "PH",
+            /*resizable: true,*/
+            resizeObjectName: "PH",
+            deletable: false},
+            new go.Binding("location", "loc", go.Point.parse),
+            $(go.Shape,
+                { figure: "Ellipse",
+                desiredSize: new go.Size(120, 60)},
+                new go.Binding("fill", "color")/*,
+                new go.Binding("position", "20,20")*/
+                ),
+            /*location: 50 0,*/
+            $(go.TextBlock,
+                {margin: 3},
+                new go.Binding("text", "key")),
+
+            $(go.Picture,
+                {desiredSize: new go.Size(25,25), alignment: new go.Spot(0.9,0)/*, alignmentFocus: go.Spot.TopRight*/},
+                new go.Binding("source", "imagen")));
+
+    diagram.linkTemplate =
+        $(go.Link,
+                {
+                 curve: go.Link.JumpOver  /*go.Link.JumpOver*/},  // link route should avoid nodes
+            $(go.Shape,
+                {strokeWidth: 2},
+                new go.Binding("stroke", "color")
+                ),
+            $(go.Shape, { toArrow: "Triangle", strokeWidth: 2}, 
+                new go.Binding("fill", "color"),
+                new go.Binding("stroke", "color")),
+            $(go.TextBlock, 
+                new go.Binding("text", "valor"), {segmentOffset: new go.Point(0,10)}) /*texto del link*/
+        );
+
+    diagram.groupTemplate =
+        $(go.Group, "Vertical",
+            { background: "transparent",
+            selectionObjectName: "PH",
+            locationObjectName: "PH",
+            resizable: true,
+            resizeObjectName: "PH",
+            deletable: false,
+            /*layout: $(go.LayeredDigraphLayout) */},
+          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+          $(go.Panel, "Auto",
+            
+            $(go.Shape, 
+                { name: "PH",
+                strokeWidth: 2,
+                figure: "RoundedRectangle"},
+                new go.Binding("fill", "color"),
+                new go.Binding("stroke", "highlight"),
+                new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+            ),
+            $(go.TextBlock, 
+                { alignment: go.Spot.BottomCenter, font: "Bold 12pt Sans-Serif" },
+                new go.Binding("text", "key"))
+        ));
     /*diagram.model.addNodeData({key: " ", color: "white", isGroup: true});*/
     for (let i = 0; i < cantidadPerspectivas; i++) {
-    		
-    	diagram.model.addNodeData({key: "perspectiva "+i, color: "lightgray", isGroup: true, /*group: " ",*/ size: mySize, /*loc: posOrigen,*/ highlight: "blue"});
-    	/*let objYOrigen = yOrigen + 20;
-    	let objXOrigen = 0;
-    	let posObjetivo;*/
+    	console.log("pers: " + cantidadPerspectivas + "pos ["+i+"]: " + posOrigen);
+        console.log("size: " + mySize);
+    	diagram.model.addNodeData({key: "perspectiva "+i, color: "lightgray", isGroup: true, /*group: " ",*/ size: mySize, loc: posOrigen, highlight: "blue"});
+    	let objYOrigen = yOrigen + myheight/2 -20;
+    	let objXOrigen = 30;
+    	let posObjetivo;
     	for (let j = 0; j < objetivosPerspectivas[i]; j++) {
     		if (objetivos[cantidad].valor < 3.34){
 	    		objetivos[cantidad].colorObjetivo = "red";
@@ -167,60 +205,18 @@ function graficar(){
 	    		else
 	    			objetivos[cantidad].imagen = "images/flecha arriba.png";
 	    	
-    		/*objXOrigen = objXOrigen + 20;
-    		posObjetivo = objXOrigen + " " + objYOrigen;*/
+            posObjetivo = objXOrigen + " " + objYOrigen;
 
-    		diagram.model.addNodeData({key: "objetivo "+i+ " - " +j, color: objetivos[cantidad].colorObjetivo, group: "perspectiva "+i, imagen: objetivos[cantidad].imagen/*, loc: new go.Point(objXOrigen.value, objYOrigen.value)*/});
-    		cantidad++;
+    		diagram.model.addNodeData({key: "objetivo "+i+ " - " +j, color: objetivos[cantidad].colorObjetivo, group: "perspectiva "+i, imagen: objetivos[cantidad].imagen, loc: posObjetivo});
+    		objXOrigen = objXOrigen + 150;
+            cantidad++;
     	}
-    	/*yOrigen = yOrigen + myheight;
-    	posOrigen = 0 + " " + yOrigen; */
+    	yOrigen = yOrigen + myheight;
+    	posOrigen = 0 + " " + yOrigen;
     }
 
 
     for (let i = 0; i < cantidadLinks; i++)
     	diagram.model.addLinkData(	{from: "objetivo " + links[i].origen, to: "objetivo " + links[i].destino, color: links[i].color, valor: Math.ceil(links[i].valor).toString()});
-
-
-    diagram.nodeTemplate = 
-		$(go.Node, "Spot", /*go.Panel.Auto*/
-			{selectionObjectName: "PH",
-	        locationObjectName: "PH",
-	        /*resizable: true,*/
-	        resizeObjectName: "PH",
-	    	deletable: false},
-			new go.Binding("location", "loc", go.Point.parse),
-			$(go.Shape,
-				{ figure: "Ellipse",
-				desiredSize: new go.Size(120, 60)},
-				new go.Binding("fill", "color")/*,
-				new go.Binding("position", "20,20")*/
-				),
-			/*location: 50 0,*/
-			$(go.TextBlock,
-				{margin: 3},
-				new go.Binding("text", "key")),
-
-			$(go.Picture,
-      			{desiredSize: new go.Size(25,25), alignment: new go.Spot(0.9,0)/*, alignmentFocus: go.Spot.TopRight*/},
-      			new go.Binding("source", "imagen")));
-
-	diagram.linkTemplate =
-	    $(go.Link,
-	    		{routing: go.Link.AvoidsNodes,
-	    		 corner: 10,
-	    		 curve: go.Link.JumpOver  /*go.Link.JumpOver*/},  // link route should avoid nodes
-	    	$(go.Shape,
-	    		{strokeWidth: 2},
-	    		new go.Binding("stroke", "color")
-	    		),
-	    	$(go.Shape, { toArrow: "Triangle", strokeWidth: 2}, 
-	    		new go.Binding("fill", "color"),
-	    		new go.Binding("stroke", "color")),
-	    	$(go.TextBlock, 
-	    		new go.Binding("text", "valor"), {segmentOffset: new go.Point(0,10)}) /*texto del link*/
-	    );
-
-	
 	
 }
