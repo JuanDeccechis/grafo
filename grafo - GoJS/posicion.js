@@ -103,47 +103,60 @@ function graficar(){
 	diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
     cantidadPerspectivas = document.querySelector("#perspectivas").value;
-    let widthTotal = 500;
-    let heightTotal = 700;
+    let widthTotal = (document.querySelector("#myDiagramDiv").clientWidth - 20);
+    let heightTotal = (document.querySelector("#myDiagramDiv").clientHeight - 20);
     let myheight = heightTotal/cantidadPerspectivas;
     let mySize = widthTotal +" " + myheight;
-    /*let yOrigen = 0;
-    let posOrigen = 0 + " " + yOrigen;*/
+    let yOrigen = 0;
+    let posOrigen = 0 + " " + yOrigen;
     let colorObjetivo ="";
     let sizeTotal = widthTotal + " " + heightTotal;
 
     let cantidad = 0;
-	diagram.groupTemplate =
-	    $(go.Group, "Vertical",
-		    { background: "transparent",
-		    selectionObjectName: "PH",
-	        locationObjectName: "PH",
-	        resizable: true,
-	        resizeObjectName: "PH",
-	        deletable: false,
-	        /*layout: $(go.LayeredDigraphLayout) */},
-	      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-	      $(go.Panel, "Auto",
-			
-	    	$(go.Shape, 
-	        	{ name: "PH",
-	        	strokeWidth: 2,
-	        	figure: "RoundedRectangle"},
-	        	new go.Binding("fill", "color"),
-	        	new go.Binding("stroke", "highlight"),
-	        	new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-	    	),
-	    	$(go.Placeholder,    /*el placeholder es para los nodos aparezcan centrados, sino aparecen de izq a der*/
-                        { padding: 1 }),
-	    	$(go.TextBlock, 
-        		{ alignment: go.Spot.BottomCenter, font: "Bold 12pt Sans-Serif" },
-        		new go.Binding("text", "key"))
-	    ));
+/*  diagram.groupTemplate =
+    $(go.Group, "Vertical",
+      { selectionObjectName: "PH",
+        locationObjectName: "PH" /*,
+        stretch: go.GraphObject.Horizontal*//*},
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.TextBlock, 
+        { font: "Bold 12pt Sans-Serif" },
+        new go.Binding("text", "key")),
+      $(go.Shape, 
+        { name: "PH",
+          fill: "lightyellow"},
+        new go.Binding("desiredSize", "size", go.Size.parse))
+    );*/
+    diagram.groupTemplate =
+        $(go.Group, "Vertical",
+            { background: "transparent",
+            selectionObjectName: "PH",
+            locationObjectName: "PH",
+            resizable: true,
+            resizeObjectName: "PH",
+            deletable: false,
+            /*layout: $(go.LayeredDigraphLayout) */},
+          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+          $(go.Panel, "Auto",
+            
+            $(go.Shape, 
+                { name: "PH",
+                strokeWidth: 2,
+                figure: "RoundedRectangle"},
+                new go.Binding("fill", "color"),
+                new go.Binding("stroke", "highlight"),
+                new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+            ),
+            $(go.TextBlock, 
+                { alignment: go.Spot.BottomCenter, font: "Bold 12pt Sans-Serif" },
+                new go.Binding("text", "key"))
+        ));
     /*diagram.model.addNodeData({key: " ", color: "white", isGroup: true});*/
     for (let i = 0; i < cantidadPerspectivas; i++) {
-    		
-    	diagram.model.addNodeData({key: "perspectiva "+i, color: "lightgray", isGroup: true, /*group: " ",*/ size: mySize, /*loc: posOrigen,*/ highlight: "blue"});
-    	/*let objYOrigen = yOrigen + 20;
+    	console.log("pers: " + cantidadPerspectivas + "pos ["+i+"]: " + posOrigen);
+        console.log("size: " + mySize);
+    	diagram.model.addNodeData({key: "perspectiva "+i, color: "lightgray", isGroup: true, /*group: " ",*/ size: mySize, loc: posOrigen, highlight: "blue"});
+    	let objYOrigen = yOrigen;/*
     	let objXOrigen = 0;
     	let posObjetivo;*/
     	for (let j = 0; j < objetivosPerspectivas[i]; j++) {
@@ -173,8 +186,9 @@ function graficar(){
     		diagram.model.addNodeData({key: "objetivo "+i+ " - " +j, color: objetivos[cantidad].colorObjetivo, group: "perspectiva "+i, imagen: objetivos[cantidad].imagen/*, loc: new go.Point(objXOrigen.value, objYOrigen.value)*/});
     		cantidad++;
     	}
-    	/*yOrigen = yOrigen + myheight;
-    	posOrigen = 0 + " " + yOrigen; */
+    	yOrigen = yOrigen + myheight;
+    	let val = 150 * (i+1);
+    	posOrigen = 0 + " " + yOrigen;
     }
 
 
@@ -222,5 +236,6 @@ function graficar(){
 	    );
 
 	
+
 	
 }

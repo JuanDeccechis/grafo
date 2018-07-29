@@ -113,32 +113,7 @@ function graficar(){
     let sizeTotal = widthTotal + " " + heightTotal;
 
     let cantidad = 0;
-	diagram.groupTemplate =
-	    $(go.Group, "Vertical",
-		    { background: "transparent",
-		    selectionObjectName: "PH",
-	        locationObjectName: "PH",
-	        resizable: true,
-	        resizeObjectName: "PH",
-	        deletable: false,
-	        /*layout: $(go.LayeredDigraphLayout) */},
-	      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-	      $(go.Panel, "Auto",
-			
-	    	$(go.Shape, 
-	        	{ name: "PH",
-	        	strokeWidth: 2,
-	        	figure: "RoundedRectangle"},
-	        	new go.Binding("fill", "color"),
-	        	new go.Binding("stroke", "highlight"),
-	        	new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-	    	),
-	    	$(go.Placeholder,    /*el placeholder es para los nodos aparezcan centrados, sino aparecen de izq a der*/
-                        { padding: 1 }),
-	    	$(go.TextBlock, 
-        		{ alignment: go.Spot.BottomCenter, font: "Bold 12pt Sans-Serif" },
-        		new go.Binding("text", "key"))
-	    ));
+
     /*diagram.model.addNodeData({key: " ", color: "white", isGroup: true});*/
     for (let i = 0; i < cantidadPerspectivas; i++) {
     		
@@ -221,6 +196,31 @@ function graficar(){
 	    		new go.Binding("text", "valor"), {segmentOffset: new go.Point(0,10)}) /*texto del link*/
 	    );
 
-	
+	diagram.groupTemplate =
+	    $(go.Group, "Vertical",
+		    { background: "transparent",
+		    selectionObjectName: "PH",
+	        locationObjectName: "PH",
+	        resizable: true,
+	        resizeObjectName: "PH",
+	        deletable: false,
+	        /*layout: $(go.LayeredDigraphLayout) */},
+	      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+	      $(go.Panel, "Auto",
+			
+	    	$(go.Shape, 
+	        	{ name: "PH",
+	        	strokeWidth: 2,
+	        	figure: "RoundedRectangle"},
+	        	new go.Binding("fill", "color"),
+	        	new go.Binding("stroke", "highlight"),
+	        	new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+	    	),
+	    	$(go.Placeholder,    /*el placeholder es para los nodos aparezcan centrados, sino aparecen de izq a der*/
+                        { padding: 1 }),
+	    	$(go.TextBlock, 
+        		{ alignment: go.Spot.BottomCenter, font: "Bold 12pt Sans-Serif" },
+        		new go.Binding("text", "key"))
+	    ));
 	
 }
