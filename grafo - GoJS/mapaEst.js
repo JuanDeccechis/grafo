@@ -113,6 +113,13 @@ function graficar(){
     let sizeTotal = widthTotal + " " + heightTotal;
 
     let cantidad = 0;
+    for (let i = 0; i < cantidadPerspectivas; i++) 
+    	if (objetivosPerspectivas[i]*150 + 30 > widthTotal)
+       		widthTotal = objetivosPerspectivas[i]*150 + 30;
+    if (90 > myheight)
+    	myheight = 90;
+    mySize = widthTotal +" " + myheight;
+
 
     diagram.nodeTemplate = 
         $(go.Node, "Spot", /*go.Panel.Auto*/
@@ -157,9 +164,10 @@ function graficar(){
             { background: "transparent",
             selectionObjectName: "PH",
             locationObjectName: "PH",
-            resizable: true,
+            /*resizable: true,*/
             resizeObjectName: "PH",
             deletable: false,
+            selectable: false,
             /*layout: $(go.LayeredDigraphLayout) */},
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           $(go.Panel, "Auto",
@@ -176,12 +184,14 @@ function graficar(){
                 { alignment: go.Spot.BottomCenter, font: "Bold 12pt Sans-Serif" },
                 new go.Binding("text", "key"))
         ));
+
+
     /*diagram.model.addNodeData({key: " ", color: "white", isGroup: true});*/
     for (let i = 0; i < cantidadPerspectivas; i++) {
     	console.log("pers: " + cantidadPerspectivas + "pos ["+i+"]: " + posOrigen);
         console.log("size: " + mySize);
     	diagram.model.addNodeData({key: "perspectiva "+i, color: "lightgray", isGroup: true, /*group: " ",*/ size: mySize, loc: posOrigen, highlight: "blue"});
-    	let objYOrigen = yOrigen + myheight/2 -20;
+    	let objYOrigen = yOrigen + myheight/2 -45;
     	let objXOrigen = 30;
     	let posObjetivo;
     	for (let j = 0; j < objetivosPerspectivas[i]; j++) {
@@ -218,5 +228,43 @@ function graficar(){
 
     for (let i = 0; i < cantidadLinks; i++)
     	diagram.model.addLinkData(	{from: "objetivo " + links[i].origen, to: "objetivo " + links[i].destino, color: links[i].color, valor: Math.ceil(links[i].valor).toString()});
+
 	
+    setInterval(function () {
+        if ((document.querySelector("#myDiagramDiv").clientWidth - 20) !== widthTotal || (document.querySelector("#myDiagramDiv").clientHeight - 20) !== heightTotal) {
+            widthTotal = (document.querySelector("#myDiagramDiv").clientWidth - 20);
+            heightTotal = (document.querySelector("#myDiagramDiv").clientHeight - 20);
+
+    		myheight = heightTotal/cantidadPerspectivas;
+    		mySize = widthTotal +" " + myheight;
+    		yOrigen = 0;
+    		posOrigen = 0 + " " + yOrigen;
+
+            for (let i = 0; i < cantidadPerspectivas; i++) 
+            	if (objetivosPerspectivas[i]*150 + 30 > widthTotal)
+            		widthTotal = objetivosPerspectivas[i]*150 + 30;
+            
+            let nuevoSize = widthTotal +" " + myheight;
+            diagram.startTransaction("shift node");
+
+            for (let i = 0; i < cantidadPerspectivas; i++) {
+	            let pers = diagram.findNodeForKey("perspectiva "+i);
+	            diagram.model.setDataProperty(pers.data, "size", nuevoSize);
+	            diagram.model.setDataProperty(pers.data, "loc", posOrigen);
+	            let objYOrigen = yOrigen + myheight/2 -45;
+		    	let objXOrigen = 30;
+		    	let posObjetivo;
+	            for (let j = 0; j < objetivosPerspectivas[i]; j++) {
+	            	let obj = diagram.findNodeForKey("objetivo "+i+ " - " +j);
+	            	posObjetivo = objXOrigen + " " + objYOrigen;
+	            	objXOrigen = objXOrigen + 150;
+	            	diagram.model.setDataProperty(obj.data, "loc", posObjetivo);
+	            }
+	            yOrigen = yOrigen + myheight;
+    			posOrigen = 0 + " " + yOrigen;
+	        }
+	        diagram.commitTransaction("shift node");
+	    
+	    }
+    }, 50);	
 }
